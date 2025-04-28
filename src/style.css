@@ -41,7 +41,7 @@ h3 {
 
 h3::after {
   content: attr(data-tasks);
-  background: lightblue;
+  background: rgb(28, 83, 102);
   margin-left: 0.25rem;
   border-radius: 0.25rem;
   padding: 0 0.25rem;
@@ -53,7 +53,7 @@ button {
   border: none;
   background: transparent;
   outline-color: var(--secondary-color);
-  color: var(--primary-color);
+  color: rgb(0, 0, 0);
   transition: 0.3s;
   opacity: 0.5;
 }
@@ -161,7 +161,6 @@ button:is(:hover, :active) {
   background: var(--task-color);
 }
 
-/* Novo highlight bonito */
 .task.highlight {
   outline: 3px solid #00b4d8; 
   outline-offset: 3px;
@@ -291,16 +290,16 @@ button:is(:hover, :active) {
 }
 
 /* === CORES DAS COLUNAS === */
-.col-aberto .column-title { background: #ba2222; color: white; }
-.col-aberto .tasks { background: #e88989; }
+.col-aberto .column-title { background: #FF2E44; color: white; }
+.col-aberto .tasks { background: #A91E2C; }
 
-.col-andamento .column-title { background: #ca8a04; color: white; }
-.col-andamento .tasks { background: #fef9c3; }
+.col-andamento .column-title { background: #FF8E27; color: white; }
+.col-andamento .tasks { background: #FF904F; }
 
-.col-concluido .column-title { background: #224de6; color: white; }
-.col-concluido .tasks { background: #7c91de; }
+.col-concluido .column-title { background: #39ADE5; color: white; }
+.col-concluido .tasks { background: #386DE0; }
 
-.col-done .column-title { background: #23962c; color: white; }
+.col-done .column-title { background: #227D1A; color: white; }
 .col-done .tasks { background: #7acf80; }
 
 /* === TASK MODAL === */

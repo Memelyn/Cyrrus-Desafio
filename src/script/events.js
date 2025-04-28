@@ -1,14 +1,15 @@
-// Handlers
-
 const modal = document.querySelector(".confirm-modal");
 const columnsContainer = document.querySelector(".columns");
 const columns = document.querySelectorAll(".column");
 let currentTask = null;
 let isEditing = false;
-
+let isDragging = false;
+let scrollInterval = null;
 
 function handleDragover(event) {
   event.preventDefault();
+
+  // reordenamento
   const draggedTask = document.querySelector(".dragging");
   const target = event.target.closest(".task, .tasks");
 
@@ -16,35 +17,76 @@ function handleDragover(event) {
 
   if (target.classList.contains("tasks")) {
     const lastTask = target.lastElementChild;
-    if (!lastTask) target.appendChild(draggedTask);
-    else {
+    if (!lastTask) {
+      target.appendChild(draggedTask);
+    } else {
       const { bottom } = lastTask.getBoundingClientRect();
-      event.clientY > bottom && target.appendChild(draggedTask);
+      if (event.clientY > bottom) {
+        target.appendChild(draggedTask);
+      }
     }
   } else {
     const { top, height } = target.getBoundingClientRect();
     const distance = top + height / 2;
-    event.clientY < distance ? target.before(draggedTask) : target.after(draggedTask);
+    if (event.clientY < distance) {
+      target.before(draggedTask);
+    } else {
+      target.after(draggedTask);
+    }
   }
+
+  // scroll 
+  const scrollThreshold = 100;
+  const scrollSpeed = 10;
+  const windowHeight = window.innerHeight;
+  const mouseY = event.clientY;
+
+  if (mouseY < scrollThreshold) {
+    startScroll('up', scrollSpeed);
+  } else if (mouseY > windowHeight - scrollThreshold) {
+    startScroll('down', scrollSpeed);
+  } else {
+    stopScroll();
+  }
+}
+
+function startScroll(direction, speed) {
+  if (scrollInterval) return; 
+
+  scrollInterval = setInterval(() => {
+    if (direction === 'up') {
+      window.scrollBy(0, -speed);
+    } else if (direction === 'down') {
+      window.scrollBy(0, speed);
+    }
+  }, 16); 
+}
+
+function stopScroll() {
+  clearInterval(scrollInterval);
+  scrollInterval = null;
 }
 
 const handleDrop = (event) => {
   event.preventDefault();
+  stopScroll(); 
   setTimeout(() => {
     window.salvarTarefas();
   }, 50); 
 };
 
-
-function handleDragend(event) {
-  event.target.classList.remove("dragging");
-  window.salvarTarefas();
-}
-
 function handleDragstart(event) {
   event.dataTransfer.effectsAllowed = "move";
   event.dataTransfer.setData("text/plain", "");
   requestAnimationFrame(() => event.target.classList.add("dragging"));
+  isDragging = true;
+}
+
+function handleDragend(event) {
+  event.target.classList.remove("dragging");
+  stopScroll();
+  isDragging = false;
+  window.salvarTarefas();
 }
 
 function handleDelete(event) {
@@ -116,8 +158,7 @@ function handleEdit(event) {
     const novoNome = nomeInput.value.trim() || "Sem nome";
     const novaDesc = descInput.value.trim() || "Sem descrição";
     const novaEntrega = entregaInput.value ? 
-    entregaInput.value.split("-").reverse().join("/") : null;
-  
+      entregaInput.value.split("-").reverse().join("/") : null;
 
     header.innerHTML = `
       <h4>${novoNome}</h4>
@@ -131,13 +172,10 @@ function handleEdit(event) {
     isEditing = false;
     header.innerHTML = task.dataset.originalContent; 
   }
+
   saveBtn.addEventListener("click", salvarEdicao, { once: true });
   cancelBtn.addEventListener("click", cancelarEdicao, { once: true });
 }
-
-
-
-
 
 function handleBlur(event) {
   const input = event.target;
@@ -189,7 +227,6 @@ function handleAdd(event) {
   });
 }
 
-
 function observeTaskChanges() {
   columns.forEach(column => {
     const observer = new MutationObserver(() => {
@@ -210,6 +247,7 @@ modal.addEventListener("submit", () => {
 
 modal.querySelector("#cancel").addEventListener("click", () => modal.close());
 modal.addEventListener("close", () => (currentTask = null));
+
 
 window.handleAdd = handleAdd;
 window.handleEdit = handleEdit;
