@@ -22,4 +22,3 @@ Ou então fazer o download do projeto e abrir o index.html no seu navegador
 - Você também pode excluir uma subtarefa clicando no símbolo "-" ao lado
 - Caso deseje deletar a tarefa, clique no ícone de lixo e confirme
 
-
